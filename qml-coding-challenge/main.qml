@@ -13,22 +13,45 @@ Window {
     height: 480
     color: "lightsteelblue"
 
+    // json parsing stuff
+        // this is just a test it probably doesn't make sense
+
+
+
+    property string jsonString : '{"name":"Patrick", "age" : "31"}';
+    property var jsonObject:  JSON.parse(jsonString);
+    property string name: jsonObject.name;
+    property int age: jsonObject.age;
 
 
     Control {
-        // chat window
+    // chat window
 
-        horizontalPadding: 10
+    bottomPadding: 30
+    topPadding: 30
         Rectangle {
-            border.width: 1
-            radius: 5
+
             color: "white"
             width: 440
             height: 400
-            TextArea {
-                id: chatWindow
-                text: ""
-           }
+            border.width: 1
+            radius: 5
+            ScrollView {
+                id: chatScroll
+
+                function scrollToBottom() {
+                    contentItem.contentY = chatWindow.height - contentItem.height
+                }
+                anchors.fill: parent
+                clip: true
+                //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                contentHeight: rect1.height+rect2.height+rect3.height
+
+                TextArea {
+                    id: chatWindow
+                    text: ""
+                }
+            }
         }
     }
 
@@ -72,9 +95,14 @@ Window {
 
             onClicked: {
                 //chatWindow.text += textInput.text + '\n'
-                socket.sendTextMessage(textInput.text)
-                textInput.text = ""
-
+                // don't send empty messages
+                if (textInput.length > 0)
+                {
+                    socket.sendTextMessage(textInput.text)
+                    textInput.text = ""
+                } else {
+                    textInput.sendTextMessage(textInput.text)
+                }
             }
         }
     }
@@ -100,6 +128,7 @@ Window {
         onTextMessageReceived: function(message){
             console.log("Recieved:", message)
             chatWindow.text += message + '\n'
+            chatScroll.scrollToBottom()
             //socket.sendTextMessage("I received (" + message + ")")
 
         }
