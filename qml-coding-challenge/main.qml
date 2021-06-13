@@ -5,9 +5,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 
 
-
 Window {
-
 
     id: mainWindow
     visible: true
@@ -15,18 +13,36 @@ Window {
     height: 480
     color: "lightsteelblue"
 
-
     // json parsing stuff
         // this is just a test it probably doesn't make sense
-
-
-
+    property string uid
     property string username
-    property string jsonString : '{"name":"Patrick", "age" : "31"}';
-    property var jsonObject:  JSON.parse(jsonString);
-    property string name: jsonObject.name;
-    property int age: jsonObject.age;
+    property string message
+    property string jsonString
+    property var jsonObject
+//    property string name: jsonObject.name;
+//    property int age: jsonObject.age;
 
+
+    function buildJsonObject(outgoingText) {
+        // format
+        // {uid:<uid>, username:<username>, message:<message>}
+
+        //jsonString = '{"username": "username"}';
+        jsonString = '{"uid": "kkjdf", "username": "username", "message": "outgoingText"}';
+//        var jsonData = {
+//            uid: uid,
+//            username: username,
+//            message: message
+
+//        }
+        //jsonString = jsonData.stringify()
+        jsonObject = JSON.parse(jsonString)
+
+    }
+    function parseJson (message) {
+
+    }
 
     Control {
     // chat window
@@ -64,6 +80,7 @@ Window {
         x: 120
         y: 100
         width: 400
+
         height: 300
         modal: true
         focus: true
@@ -76,19 +93,31 @@ Window {
 
         }
 
+        Control {
 
-        TextInput {
-            id: loginPopupInput
-            height: 100
-            width: 200
-            y: 200
-            anchors.left: login
+            Rectangle {
+                height: 50
+                width: 200
+                y: 200
+                border.width: 1
+                radius: 5
+                color: "white"
+                TextInput {
+                    id: loginPopupInput
+                    clip: true
+                    selectByMouse: true
+                    color: "black"
+                    visible: true
+                    wrapMode: Text.WrapAnywhere
+                    anchors.fill: parent
 
+                }
+            }
         }
-
         Button {
             y: 200
             x: 220
+            text: "submit"
             onClicked: {
                 // add some protection for valid input here
                 username = loginPopupInput.text
@@ -97,8 +126,6 @@ Window {
             }
         }
     }
-
-
 
     Control {
         // this is the container for the text input and send button
@@ -123,11 +150,10 @@ Window {
                 color: "black"
                 visible: true
                 wrapMode: Text.WrapAnywhere
-                anchors {
-                    fill: parent
+                anchors.fill: parent
+
                 }
             }
-        }
 
         Button {
             id: sendButton
@@ -142,7 +168,10 @@ Window {
                 // don't send empty messages
                 if (textInput.length > 0)
                 {
-                    socket.sendTextMessage(textInput.text)
+                    // call a function to build json string
+                    //message = textInput.text
+                    buildJsonObject(textInput.text)
+                    socket.sendTextMessage(jsonObject)
                     textInput.text = ""
                 }
             }
@@ -172,13 +201,55 @@ Window {
             if (username.length < 1)
             {
                 // open login popup if the username isn't set
-                console.log("length")
                 login.open()
             }
+            if (uid.length < 1)
+            {
+                // uid has not been assigned
 
-            console.log("Recieved:", message)
-            chatWindow.text += message + '\n'
-            chatScroll.scrollToBottom()
+            }
+
+            // receive json string
+            // if the json object has only 1 key then it is the initial connection json object
+            // use this to assign the local uid property
+                // objects in order
+                    // uid of sender
+                        // check if uid of sender is you
+                    // username of sender
+                    // message
+                        // print message
+                            // if this user sent the message print "You: <message>"
+                            // else print "<username>: <message>"
+
+                    // usernames of all users currently logged in
+                        // loop through each user and add them to the users text area
+
+           // property string str: message;
+
+
+            // first thing the server will send when a user logs in is the connection id as a string
+            // anything else it sends will be a json object message
+                // can you do a conditional based on type of message?
+
+            //parseJson(message)
+
+            var jsonMessage = JSON.parse(message)
+
+
+            console.log("json object count: " + Object.keys(jsonMessage).length)
+
+            if (Object.keys(jsonMessage).length === 1) {
+                // this is this users uid
+
+                uid = jsonMessage.uid
+                console.log("local uid: " + uid)
+            } else {
+                console.log("Recieved:", message)
+
+                chatWindow.text += jsonMessage.uid + '\n'
+                chatScroll.scrollToBottom()
+            }
+
 
         }
     }

@@ -22,9 +22,15 @@ coding challenge for upcoming interview
 
 // to do items
 
+	// find out how to do qml json.stringify
+	//
 
-	// see if pageview will work for login screen
-	// turn chat window into a scroll view
+	// chat work cycle
+		// send strings across the network
+		// use json.stringify to send those strings
+		// build the json object 
+		// use the json fields whenever possible
+		
 
 	// switch from sending string message to sending json object
 		// json format: <user id>  <user name> <string message> 

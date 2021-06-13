@@ -13,14 +13,22 @@ wss.on('connection', function connection(ws, request) {
 
   ws.client_id = uuid.v4();
   connected_users_array.push(ws.client_id)
-  ws.send('Your client Id:' + ws.client_id)
+  
+  var jsonid = {
+    uid: ws.client_id
+  };
+  var jsonString = JSON.stringify(jsonid);
+  console.log(jsonString);
+  ws.send(jsonString);
 
   ws.on('message', function incoming(message) {
+    var jsonMessage = JSON.stringify(message);
+    console.log(jsonMessage);
     console.log('Received: %s', message);
-    
 //    broadcast message to all clients
     wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
+
         client.send(message);
       }
     });
