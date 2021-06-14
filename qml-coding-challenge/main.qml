@@ -17,6 +17,10 @@ Window {
     property string username
     property string message
 
+    Keys.onEscapePressed: {
+        console.log("esc was pressed")
+    }
+
     Popup {
         // this will popup and prompt the user for a login if they haven't logged in
         id: login
@@ -30,6 +34,7 @@ Window {
 
         TextArea {
             text: "Please enter your username"
+            readOnly: true
             font.pixelSize: 25
             width: 400
             height: 50
@@ -58,6 +63,7 @@ Window {
             }
         }
         Button {
+            id: submitButton
             y: 200
             x: 220
             text: "submit"
@@ -181,7 +187,7 @@ Window {
                 id: usersTitle
                 text: "Connected Users"
                 font.pixelSize: 15
-
+                readOnly: true
 
 
             }
@@ -232,8 +238,6 @@ Window {
                 if (jsonMessage.uid != null) {
                     uid = jsonMessage.uid
                     // this is the initial message from the server letting you know you've connected
-
-
                 }
                 else if (jsonMessage.username !== null) {
                     // this is listing connected users
