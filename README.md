@@ -1,10 +1,13 @@
 # QMLCodingChallenge
 coding challenge for upcoming interview
-
+THIS FILE DOESN'T RESPECT NEWLINES WHEN VIEWING IN GITHUB PLEASE CLICK EDIT BUTTON OR OPEN IN A TEXT EDITOR TO VIEW PROPERLY!!!
 
 // high level design
+
 	// user is presented with a login screen
+	
 		// no authentication occurs, they just pick a user name
+		
 	// client connects to server
 	// server assigns the client an id
 	// client saves that id
